@@ -28,19 +28,85 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaiZAIsuUibi0rZXcB1C2iZQrio0CYMFg&v=3&callback=initMap">
     </script>
 <script>
-          var map;
+      var map;
+      // Create a new blank array for all the listing markers.
+      var markers = [];
+
       function initMap() {
         // Constructor creates a new map - only center and zoom are required.
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 42.3138461, lng: -71.12}, //-71.1363335
           zoom: 15
         });
-        var tribeca = {lat: 40.719526, lng: -74.0089934};
-        var marker = new google.maps.Marker({
-          position: tribeca,
-          map: map,
-          title: 'First Marker!'
-        });
+
+        var locations = [
+          {title: 'Jamaica Pond', location: {lat: 42.317161, lng: -71.120342}},
+          {title: 'FoMu Premium Alternative Ice Cream', location: {lat: 42.314303, lng: -71.114265}},
+          {title: 'JP Centre Yoga', location: {lat: 42.312448, lng: -71.113943}}
+        ];
+
+        var largeInfoWindow = new google.maps.InfoWindow();
+
+
+        // Loop through the location array to create an array of markers
+        for (var i = 0; i < locations.length; i++) {
+          // Get position form the location array.
+          var position = locations[i].location;
+          var title = locations[i].title;
+          // Create a marker per location and put into markers array
+          var marker = new google.maps.Marker({
+            position: position,
+            title: title,
+            animation: google.maps.Animation.Drop,
+            id: i
+          });
+          // Push the maker to the array of markers
+          markers.push(marker);
+          // Create an onclick event to open an infowindow at each marker.
+          marker.addListener('click',  function(){
+            populateInfoWindow(this, largeInfoWindow);
+          });
+
+
+        };
+
+
+
+        // Add event listeners to buttons for display
+        // TODO: check to see if Knockout should handle
+        document.getElementById('show-listings').addEventListener('click', showlistings);
+        document.getElementById('hide-listings').addEventListener('click', hidelistings);
+
+        // Function to polulate infowindow
+        function populateInfoWindow(marker, infowindow){
+          // check to see if the window is not open already
+          if ( infowindow.marker != marker){
+            infowindow.marker = marker;
+            infowindow.setContent('<div>' + marker.title + '</div>');
+            infowindow.open(map, marker);
+            // make sure the marker is properly cleared if window is closed
+            infowindow.addListener('closeclick', function(){
+              infowindow.setMarker(null);
+            })
+          }
+        }
+
+        function showlistings() {
+          var bounds = new google.maps.LatLngBounds();
+          for(var i = 0; i < markers.length; i++){
+            markers[i].setMap(map);
+            bounds.extend(markers[i].position);
+          }
+          map.fitBounds(bounds);
+
+        }
+
+        function hidelistings() {
+          for (var i = 0; i < markers.length; i++){
+            markers[i].setMap(null);
+          }
+        }
+
       }
 
 </script>
@@ -48,17 +114,12 @@
 </head>
 
 <body>
-<div class="container">
+<div class="options-box">
+  <input id="show-listings" type="button" value="Show Listings">
+  <input id="hide-listings" type="button" value="Hide Listings">
 
-    <div class="row">
-        <h1>Hello world!</h1>
-    </div>
-
-    <div class="row">
-        <div id="map"></div>
-    </div>
 </div>
-
+        <div id="map"></div>
 
 
 </body>
