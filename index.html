@@ -22,56 +22,127 @@
 
 <!-- Bootstrap Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-
-<!-- Load Google Maps API -->
-<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaiZAIsuUibi0rZXcB1C2iZQrio0CYMFg&v=3&callback=initMap">
-    </script>
-<script>
+    <script>
       var map;
+
       // Create a new blank array for all the listing markers.
       var markers = [];
 
       function initMap() {
-        // Create a styles array for map
-        var styles = [{"elementType":"geometry","stylers":[{"hue":"#ff4400"},{"saturation":-68},{"lightness":-4},{"gamma":0.72}]},{"featureType":"road","elementType":"labels.icon"},{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"hue":"#0077ff"},{"gamma":3.1}]},{"featureType":"water","stylers":[{"hue":"#00ccff"},{"gamma":0.44},{"saturation":-33}]},{"featureType":"poi.park","stylers":[{"hue":"#44ff00"},{"saturation":-23}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"hue":"#007fff"},{"gamma":0.77},{"saturation":65},{"lightness":99}]},{"featureType":"water","elementType":"labels.text.stroke","stylers":[{"gamma":0.11},{"weight":5.6},{"saturation":99},{"hue":"#0091ff"},{"lightness":-86}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"lightness":-48},{"hue":"#ff5e00"},{"gamma":1.2},{"saturation":-23}]},{"featureType":"transit","elementType":"labels.text.stroke","stylers":[{"saturation":-64},{"hue":"#ff9100"},{"lightness":16},{"gamma":0.47},{"weight":2.7}]}];
+        // Create a styles array to use with the map.
+        var styles = [
+          {
+            featureType: 'water',
+            stylers: [
+              { color: '#19a0d8' }
+            ]
+          },{
+            featureType: 'administrative',
+            elementType: 'labels.text.stroke',
+            stylers: [
+              { color: '#ffffff' },
+              { weight: 6 }
+            ]
+          },{
+            featureType: 'administrative',
+            elementType: 'labels.text.fill',
+            stylers: [
+              { color: '#e85113' }
+            ]
+          },{
+            featureType: 'road.highway',
+            elementType: 'geometry.stroke',
+            stylers: [
+              { color: '#efe9e4' },
+              { lightness: -40 }
+            ]
+          },{
+            featureType: 'transit.station',
+            stylers: [
+              { weight: 9 },
+              { hue: '#e85113' }
+            ]
+          },{
+            featureType: 'road.highway',
+            elementType: 'labels.icon',
+            stylers: [
+              { visibility: 'off' }
+            ]
+          },{
+            featureType: 'water',
+            elementType: 'labels.text.stroke',
+            stylers: [
+              { lightness: 100 }
+            ]
+          },{
+            featureType: 'water',
+            elementType: 'labels.text.fill',
+            stylers: [
+              { lightness: -100 }
+            ]
+          },{
+            featureType: 'poi',
+            elementType: 'geometry',
+            stylers: [
+              { visibility: 'on' },
+              { color: '#f0e4d3' }
+            ]
+          },{
+            featureType: 'road.highway',
+            elementType: 'geometry.fill',
+            stylers: [
+              { color: '#efe9e4' },
+              { lightness: -25 }
+            ]
+          }
+        ];
+
         // Constructor creates a new map - only center and zoom are required.
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 42.3138461, lng: -71.12}, //-71.1363335
-          zoom: 15,
+          zoom: 13,
           styles: styles,
           mapTypeControl: false
         });
 
-        var locations = [
+        // These are the real estate listings that will be shown to the user.
+         var locations = [
           {title: 'Jamaica Pond', location: {lat: 42.317161, lng: -71.120342}},
           {title: 'FoMu Premium Alternative Ice Cream', location: {lat: 42.314303, lng: -71.114265}},
-          {title: 'JP Centre Yoga', location: {lat: 42.312448, lng: -71.113943}}
+          {title: 'JP Centre Yoga', location: {lat: 42.312448, lng: -71.113943}},
+          {title: 'JP Boat House', location: {lat: 42.315776, lng: -71.117557}},
+          {title: 'JP licks', location: {lat: 42.312878, lng: -71.114382 }}
         ];
 
-        var largeInfoWindow = new google.maps.InfoWindow();
+        var largeInfowindow = new google.maps.InfoWindow();
 
-        // style icon markers
+
+        // Style the markers a bit. This will be our listing marker icon.
         var defaultIcon = makeMarkerIcon('0091ff');
-        var highlightedIcon = makeMarkerIcon('FFF244');
 
+        // Create a "highlighted location" marker color for when the user
+        // mouses over the marker.
+        var highlightedIcon = makeMarkerIcon('FFFF24');
 
-        // Loop through the location array to create an array of markers
+        // The following group uses the location array to create an array of markers on initialize.
         for (var i = 0; i < locations.length; i++) {
-          // Get position form the location array.
+          // Get the position from the location array.
           var position = locations[i].location;
           var title = locations[i].title;
-          // Create a marker per location and put into markers array
+          // Create a marker per location, and put into markers array.
           var marker = new google.maps.Marker({
             position: position,
             title: title,
-            icon: defaultIcon,
             animation: google.maps.Animation.DROP,
+            icon: defaultIcon,
             id: i
           });
-          // Push the maker to the array of markers
+          // Push the marker to our array of markers.
           markers.push(marker);
-
+          // Create an onclick event to open the large infowindow at each marker.
+          marker.addListener('click', function() {
+            populateInfoWindow(this, largeInfowindow);
+          });
           // Two event listeners - one for mouseover, one for mouseout,
           // to change the colors back and forth.
           marker.addListener('mouseover', function() {
@@ -80,50 +151,76 @@
           marker.addListener('mouseout', function() {
             this.setIcon(defaultIcon);
           });
-          // Create an onclick event to open an infowindow at each marker.
-          marker.addListener('click',  function(){
-            populateInfoWindow(this, largeInfoWindow);
+        }
+
+        document.getElementById('show-listings').addEventListener('click', showListings);
+        document.getElementById('hide-listings').addEventListener('click', hideListings);
+
+      }
+
+      // This function populates the infowindow when the marker is clicked. We'll only allow
+      // one infowindow which will open at the marker that is clicked, and populate based
+      // on that markers position.
+      function populateInfoWindow(marker, infowindow) {
+        // Check to make sure the infowindow is not already opened on this marker.
+        if (infowindow.marker != marker) {
+          // Clear the infowindow content to give the streetview time to load.
+          infowindow.setContent('');
+          infowindow.marker = marker;
+          // Make sure the marker property is cleared if the infowindow is closed.
+          infowindow.addListener('closeclick', function() {
+            infowindow.marker = null;
           });
-
-
-        };
-
-
-
-        // Add event listeners to buttons for display
-        // TODO: check to see if Knockout should handle
-        document.getElementById('show-listings').addEventListener('click', showlistings);
-        document.getElementById('hide-listings').addEventListener('click', hidelistings);
-
-        // Function to polulate infowindow
-        function populateInfoWindow(marker, infowindow){
-          // check to see if the window is not open already
-          if ( infowindow.marker != marker){
-            infowindow.marker = marker;
-            infowindow.setContent('<div>' + marker.title + '</div><div>' + marker.position + '</div>');
-            infowindow.open(map, marker);
-            // make sure the marker is properly cleared if window is closed
-            infowindow.addListener('closeclick', function(){
-              infowindow.setMarker(null);
-            })
+          var streetViewService = new google.maps.StreetViewService();
+          var radius = 50;
+          // In case the status is OK, which means the pano was found, compute the
+          // position of the streetview image, then calculate the heading, then get a
+          // panorama from that and set the options
+          function getStreetView(data, status) {
+            if (status == google.maps.StreetViewStatus.OK) {
+              var nearStreetViewLocation = data.location.latLng;
+              var heading = google.maps.geometry.spherical.computeHeading(
+                nearStreetViewLocation, marker.position);
+                infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+                var panoramaOptions = {
+                  position: nearStreetViewLocation,
+                  pov: {
+                    heading: heading,
+                    pitch: 30
+                  }
+                };
+              var panorama = new google.maps.StreetViewPanorama(
+                document.getElementById('pano'), panoramaOptions);
+            } else {
+              infowindow.setContent('<div>' + marker.title + '</div>' +
+                '<div>No Street View Found</div>');
+            }
           }
+          // Use streetview service to get the closest streetview image within
+          // 50 meters of the markers position
+          streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+          // Open the infowindow on the correct marker.
+          infowindow.open(map, marker);
         }
+      }
 
-        function showlistings() {
-          var bounds = new google.maps.LatLngBounds();
-          for(var i = 0; i < markers.length; i++){
-            markers[i].setMap(map);
-            bounds.extend(markers[i].position);
-          }
-          map.fitBounds(bounds);
-
+      // This function will loop through the markers array and display them all.
+      function showListings() {
+        var bounds = new google.maps.LatLngBounds();
+        // Extend the boundaries of the map for each marker and display the marker
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+          bounds.extend(markers[i].position);
         }
+        map.fitBounds(bounds);
+      }
 
-        function hidelistings() {
-          for (var i = 0; i < markers.length; i++){
-            markers[i].setMap(null);
-          }
+      // This function will loop through the listings and hide them all.
+      function hideListings() {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
         }
+      }
 
       // This function takes in a COLOR, and then creates a new marker
       // icon of that color. The icon will be 21 px wide by 34 high, have an origin
@@ -139,10 +236,12 @@
         return markerImage;
       }
 
-      }
+    </script>
 
-</script>
-
+    <script async defer
+        src=
+        "https://maps.googleapis.com/maps/api/js?key=AIzaSyAaiZAIsuUibi0rZXcB1C2iZQrio0CYMFg&libraries=geometry&v=3&callback=initMap">
+    </script>
 </head>
 
 <body>
