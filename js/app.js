@@ -1,3 +1,4 @@
+// An array of locations that will be used to populate the map
 var initialLocations = [
     {
         title: 'Jamaica Pond',
@@ -38,7 +39,7 @@ var initialLocations = [
 ];
 
 
-// Wrap functionality in jQuery ready function to make sure page is loaded before doing anything
+// Wrap functionality in jQuery ready function to make sure page is loaded before doing anything.
 $(document).ready(function(){
 
 var Location = function(locationItem, id) {
@@ -55,16 +56,18 @@ var ViewModel = function() {
     // Create an empty observable array to hold the locations
     self.locationList = ko.observableArray([]);
 
-    // Loop over all locations and create an observable for each and add to array
-    // Neat trick to get an index on an element using a for each loop instead of doing a for loop.
+    // Loop over all locations and create an observable for each and add to an to the locationList array.
+    // Neat trick to get an index on an element using a for each loop instead of doing a for loop reference at:
     // http://stackoverflow.com/questions/10179815/how-do-you-get-the-loop-counter-index-using-a-for-in-syntax-in-javascript
-    // Need index so we can us that when we send a click to the google maps api
+    // Need index so we can us that when we send a click or actions to the google maps api.
     initialLocations.forEach(function(locationItem, id){
         self.locationList.push( new Location(locationItem, id));
     });
 
+    // Define the query variable used for filtering as an empty string to prevent undefined errors.
     self.query = ko.observable('');
 
+    // Filter Location List and Google Maps Markers via Knockout.
     // List filtering possible through help via forums especially this example by coach John Mav http://codepen.io/JohnMav/pen/OVEzWM
     // Other good helpful filtering references:
     //      http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.
@@ -74,31 +77,28 @@ var ViewModel = function() {
     // The arrayFilter will go through each item in the array and return only those items that match.
     // Each search is completed using the indexOf Javascript function that returns -1 if the string is not found.
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf
-    // TODO: Update data model and search to filter on categories
+    // TODO: Update data model and search to filter on categories.
     self.search = ko.computed(function(){
         return ko.utils.arrayFilter(self.locationList(), function(Location){
-            // console.log('query :' +self.query() + ' ' + Location.title().toLowerCase().indexOf(self.query().toLowerCase()));
-            if(Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
-                // https://developers.google.com/maps/documentation/javascript/markers#remove
-                console.log('show this one: ' + Location.id);
-                markers[Location.id].setMap(map);
-
-            } else {
-                console.log('hide this one: ' + Location.id);
-                markers[Location.id].setMap(null);
+            // Check to see if Markers exist so we can also filter markers.
+            if(markers.length > 0){
+                if(Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
+                    markers[Location.id].setMap(map);
+                }
+                else {
+                    markers[Location.id].setMap(null);
+                };
             }
             return Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0;
         });
     });
 
-    // When a location in the list of locations is clicked we want the info window to show so we send a click
+    // When a location in the list of locations is clicked send a click to the Google Maps API to show the info window.
     self.mapClick = function(){
         google.maps.event.trigger(markers[this.id], 'click');
     }
-
 };
 
-
-var waitForMapLoad = setTimeout(function(){ko.applyBindings(new ViewModel());}, 300);
+ko.applyBindings(new ViewModel());
 
 });

@@ -16,23 +16,17 @@
 
 <!-- Load MAP functions -->
 <script src="js/map.js"></script>
-
-
 </head>
 
 <body>
 <div class="options-box">
-  <input id="show-listings" type="button" value="Show All Listings">
-
-
-  <p>Filter: <input data-bind="textInput: query, valueUpdate: 'keyup'" type="search" /></p>
-
-  <ul data-bind="foreach: search()">
-    <li data-bind="text: title, click: $parent.mapClick"></li>
-  </ul>
-
+    <input id="show-listings" type="button" value="Show All Listings">
+    <p>Filter: <input data-bind="textInput: query, valueUpdate: 'keyup'" type="search" /></p>
+    <ul data-bind="foreach: search()">
+        <li data-bind="text: title, click: $parent.mapClick"></li>
+    </ul>
 </div>
-        <div id="map"></div>
+<div id="map"></div>
 
 <!-- Load Google Maps API with callback to initMap in map.js -->
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaiZAIsuUibi0rZXcB1C2iZQrio0CYMFg&libraries=geometry&v=3&callback=initMap"></script>
