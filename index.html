@@ -28,7 +28,7 @@
   <p>Filter: <input data-bind="textInput: query, valueUpdate: 'keyup'" type="search" /></p>
 
   <ul data-bind="foreach: search()">
-    <li data-bind="text: title"></li>
+    <li data-bind="text: title, click: $parent.mapClick"></li>
   </ul>
 
 </div>

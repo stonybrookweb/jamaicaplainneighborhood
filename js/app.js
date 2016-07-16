@@ -41,10 +41,11 @@ var initialLocations = [
 // Wrap functionality in jQuery ready function to make sure page is loaded before doing anything
 $(document).ready(function(){
 
-var Location = function(locationItem) {
+var Location = function(locationItem, id) {
     this.title = ko.observable(locationItem.title);
     this.location = ko.observable(locationItem.location);
     this.note = ko.observable(locationItem.note);
+    this.id = id;
 };
 
 
@@ -55,8 +56,11 @@ var ViewModel = function() {
     self.locationList = ko.observableArray([]);
 
     // Loop over all locations and create an observable for each and add to array
-    initialLocations.forEach(function(locationItem){
-        self.locationList.push( new Location(locationItem));
+    // Neat trick to get an index on an element using a for each loop instead of doing a for loop.
+    // http://stackoverflow.com/questions/10179815/how-do-you-get-the-loop-counter-index-using-a-for-in-syntax-in-javascript
+    // Need index so we can us that when we send a click to the google maps api
+    initialLocations.forEach(function(locationItem, id){
+        self.locationList.push( new Location(locationItem, id));
     });
 
     self.query = ko.observable('');
@@ -74,16 +78,27 @@ var ViewModel = function() {
     self.search = ko.computed(function(){
         return ko.utils.arrayFilter(self.locationList(), function(Location){
             // console.log('query :' +self.query() + ' ' + Location.title().toLowerCase().indexOf(self.query().toLowerCase()));
+            if(Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
+                // https://developers.google.com/maps/documentation/javascript/markers#remove
+                console.log('show this one: ' + Location.id);
+                markers[Location.id].setMap(map);
+
+            } else {
+                console.log('hide this one: ' + Location.id);
+                markers[Location.id].setMap(null);
+            }
             return Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0;
         });
     });
 
-
-
+    // When a location in the list of locations is clicked we want the info window to show so we send a click
+    self.mapClick = function(){
+        google.maps.event.trigger(markers[this.id], 'click');
+    }
 
 };
 
 
+var waitForMapLoad = setTimeout(function(){ko.applyBindings(new ViewModel());}, 300);
 
-ko.applyBindings(new ViewModel());
 });

@@ -145,4 +145,5 @@ return markerImage;
 
 }
 
-var waitForMapLoad = setTimeout(showListings, 3000);
+// All listings should show by default. But if we call to early the Google Maps API won't be finished it's work.
+var waitForMapLoad = setTimeout(showListings, 300);
