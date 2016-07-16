@@ -89,6 +89,17 @@ document.getElementById('show-listings').addEventListener('click', showListings)
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
 function populateInfoWindow(marker, infowindow) {
+    // Check for Wiki Data
+    var wikiData = '<div class="wiki-info"><h3>Wikepedia Articles</h3><p>No Wikipedia Informaion Available.</p></div>';
+    if(wikiArray[marker.id][2].length > 0){
+        wikiData = '<div class="wiki-info"><h3>Wikepedia Articles</h3><p>';
+        wikiData +=  wikiArray[marker.id][2];
+        wikiData +=  '<a href="' + wikiArray[marker.id][3] + '" target="_blank">' + wikiArray[marker.id][3] + '</a></p>';
+        wikiData +=  '</div>';
+    };
+
+
+
 // Check to make sure the infowindow is not already opened on this marker.
 if (infowindow.marker != marker) {
     // Clear the infowindow content to give the streetview time to load.
@@ -103,12 +114,14 @@ if (infowindow.marker != marker) {
     // In case the status is OK, which means the pano was found, compute the
     // position of the streetview image, then calculate the heading, then get a
     // panorama from that and set the options
+    // TODO: Think about separating Wiki Data from Streetview data display
     function getStreetView(data, status) {
         if (status == google.maps.StreetViewStatus.OK) {
+          console.log(wikiData);
           var nearStreetViewLocation = data.location.latLng;
           var heading = google.maps.geometry.spherical.computeHeading(
               nearStreetViewLocation, marker.position);
-          infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+          infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>' + wikiData);
           var panoramaOptions = {
               position: nearStreetViewLocation,
               pov: {
@@ -121,9 +134,11 @@ if (infowindow.marker != marker) {
         }
         else {
             infowindow.setContent('<div>' + marker.title + '</div>' +
-                '<div>No Street View Found</div>');
+                '<div>No Street View Found</div>' + wikiData);
         }
     };
+
+
     // Use streetview service to get the closest streetview image within
     // 50 meters of the markers position
     streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
@@ -165,3 +180,39 @@ function makeMarkerIcon(markerColor) {
 
 // All listings should show by default. But if we call to early the Google Maps API won't be finished it's work.
 var waitForMapLoad = setTimeout(showListings, 300);
+
+
+
+
+ //  *** Wikipedia API ***
+    // https://www.mediawiki.org/wiki/API:Main_page
+    // set up new array to use for wiki articles
+var wikiArray = [];
+var currentWikiRequest = 0;
+var countOfArticles = initialLocations.length - 1;
+function getWikiArticles(){
+    // Using recursion one at a time look up titles via Wikipedia API
+    // Reminder of using recursion from http://stackoverflow.com/questions/14408718/wait-for-callback-before-continue-for-loop
+    // Setup URL for Ajax request to include the current location title
+    var wikiSearch = initialLocations[currentWikiRequest].title;
+    var wikiURL = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + wikiSearch + '&format=json&callback=wikiCallback';
+
+    $.ajax({
+        url: wikiURL,
+        dataType: 'jsonp',
+        success: function(response){
+            wikiArray[currentWikiRequest] = response;
+            // Now we check if we need to do more requests and use recursion to do them.
+            if (currentWikiRequest < countOfArticles){
+                  currentWikiRequest ++;
+                  getWikiArticles();
+            } else {
+                  // TODO: Delete this else statement just used for testing.
+                  console.log(wikiArray);
+            };
+        }
+    });
+};
+
+
+getWikiArticles();

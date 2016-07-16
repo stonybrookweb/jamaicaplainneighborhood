@@ -1,4 +1,4 @@
-// An array of locations that will be used to populate the map
+// The Model, an array of locations that will be used to populate the map
 var initialLocations = [
     {
         title: 'Jamaica Pond',
@@ -23,7 +23,7 @@ var initialLocations = [
         }
     },
     {
-        title: 'JP Boat House',
+        title: 'Jamaica Pond Boat House',
         location: {
             lat: 42.315776,
             lng: -71.117557
@@ -42,12 +42,6 @@ var initialLocations = [
 // Wrap functionality in jQuery ready function to make sure page is loaded before doing anything.
 $(document).ready(function(){
 
-var Location = function(locationItem, id) {
-    this.title = ko.observable(locationItem.title);
-    this.location = ko.observable(locationItem.location);
-    this.note = ko.observable(locationItem.note);
-    this.id = id;
-};
 
 
 var ViewModel = function() {
@@ -55,6 +49,14 @@ var ViewModel = function() {
     var self = this;
     // Create an empty observable array to hold the locations
     self.locationList = ko.observableArray([]);
+
+    // Constructor for a location object
+    var Location = function(locationItem, id) {
+    this.title = ko.observable(locationItem.title);
+    this.location = ko.observable(locationItem.location);
+    this.note = ko.observable(locationItem.note);
+    this.id = id;
+};
 
     // Loop over all locations and create an observable for each and add to an to the locationList array.
     // Neat trick to get an index on an element using a for each loop instead of doing a for loop reference at:
@@ -97,8 +99,21 @@ var ViewModel = function() {
     self.mapClick = function(){
         google.maps.event.trigger(markers[this.id], 'click');
     }
-};
+
+
+
+
+
+
+
+
+}; // End View Model
 
 ko.applyBindings(new ViewModel());
 
 });
+
+
+
+
+
