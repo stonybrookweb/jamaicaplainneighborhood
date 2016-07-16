@@ -8,6 +8,8 @@ var map;
 // Create a new blank array for all the markers.
 var markers = [];
 
+
+
 function initMap() {
 // Create a styles array to use with the map.
 // Sytle from Snazzy Maps https://snazzymaps.com/style/81/ilustra%C3%A7%C3%A3o
@@ -26,9 +28,11 @@ var largeInfowindow = new google.maps.InfoWindow();
 // Style the markers a bit. This will be our listing marker icon.
 var defaultIcon = makeMarkerIcon('0091ff');
 
-// Create a "highlighted location" marker color for when the user
-// mouses over the marker.
+// Create a "highlighted location" marker color for when the user mouses over the marker.
 var highlightedIcon = makeMarkerIcon('FFFF24');
+
+// Create a "selected location" marker color for when the user selects a marker from the list.
+var selectedIcon = makeMarkerIcon('4B0082');
 
 // The following group uses the location array to create an array of markers on initialize.
 for (var i = 0; i < initialLocations.length; i++) {
@@ -50,6 +54,7 @@ for (var i = 0; i < initialLocations.length; i++) {
     // Create an onclick event to open the large infowindow at each marker.
     marker.addListener('click', function() {
         populateInfoWindow(this, largeInfowindow);
+        toggleBounce(this);
     });
 
   // Two event listeners - one for mouseover, one for mouseout,
@@ -60,13 +65,25 @@ for (var i = 0; i < initialLocations.length; i++) {
     marker.addListener('mouseout', function() {
         this.setIcon(defaultIcon);
     });
-}
+
+
+    function toggleBounce(currentMarker) {
+    // First go through all markers and set animation to null
+    markers.forEach(function(marker){
+        marker.setAnimation(null);
+        marker.setIcon(defaultIcon);
+    });
+    // Now animate the current marker
+    currentMarker.setAnimation(google.maps.Animation.BOUNCE);
+    currentMarker.setIcon(selectedIcon);
+    };
+}; // End initMap
 
 // TODO: Show all listings by default
 document.getElementById('show-listings').addEventListener('click', showListings);
 
 
-}
+};
 
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
@@ -115,6 +132,7 @@ if (infowindow.marker != marker) {
 };
 };
 
+// TODO: Remove this functionality and show by default - move this into creation of markers
 // This function will loop through the markers array and display them all.
 function showListings() {
     var bounds = new google.maps.LatLngBounds();
@@ -141,6 +159,9 @@ function makeMarkerIcon(markerColor) {
     );
     return markerImage;
 }
+
+
+
 
 // All listings should show by default. But if we call to early the Google Maps API won't be finished it's work.
 var waitForMapLoad = setTimeout(showListings, 300);
