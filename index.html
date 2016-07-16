@@ -22,11 +22,12 @@
 
 <body>
 <div class="options-box">
-  <input id="show-listings" type="button" value="Show Listings">
-  <input id="hide-listings" type="button" value="Hide Listings">
-  <p>Filter: <input data-bind="textInput: searchValue, valueUpdate: 'keyup'" type="search" /></p>
-  <h1 data-bind="text: searchValue"></h1>
-  <ul data-bind="foreach: locationList">
+  <input id="show-listings" type="button" value="Show All Listings">
+
+
+  <p>Filter: <input data-bind="textInput: query, valueUpdate: 'keyup'" type="search" /></p>
+
+  <ul data-bind="foreach: search()">
     <li data-bind="text: title"></li>
   </ul>
 

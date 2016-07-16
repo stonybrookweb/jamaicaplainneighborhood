@@ -52,33 +52,33 @@ var ViewModel = function() {
     // Set self to this so we can access the this of the View Model Function while still accessing the this of a specific binding.
     var self = this;
     // Create an empty observable array to hold the locations
-    this.locationList = ko.observableArray([]);
+    self.locationList = ko.observableArray([]);
 
     // Loop over all locations and create an observable for each and add to array
     initialLocations.forEach(function(locationItem){
         self.locationList.push( new Location(locationItem));
     });
 
-    this.searchValue = ko.observable('');
+    self.query = ko.observable('');
 
-    this.searchArray = ko.computed(function() {
-
-
-
-
-        if(self.searchValue() !== '') {
-           // get search value and set to lowercase for future search use
-            var filter = self.searchValue().toLowerCase();
-            console.log('filter: ' + filter);
-            return self.locationList();
-        } else {
-            return ko.utils.arrayFilter(self.locationList(), function(prod) {
-                return prod.genre == self.searchValue();
-            });
-        }
-
-
+    // List filtering possible through help via forums especially this example by coach John Mav http://codepen.io/JohnMav/pen/OVEzWM
+    // Other good helpful filtering references:
+    //      http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.
+    //      http://opensoul.org/2011/06/23/live-search-with-knockoutjs/
+    // Unable to find good documentation on arrayFilter which seems to be an internal utilitiy in Knockout that is accessbile for other uses.
+    // It appears the arrayFilter takes two values, an array and a search value which can be a function.
+    // The arrayFilter will go through each item in the array and return only those items that match.
+    // Each search is completed using the indexOf Javascript function that returns -1 if the string is not found.
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf
+    // TODO: Update data model and search to filter on categories
+    self.search = ko.computed(function(){
+        return ko.utils.arrayFilter(self.locationList(), function(Location){
+            // console.log('query :' +self.query() + ' ' + Location.title().toLowerCase().indexOf(self.query().toLowerCase()));
+            return Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0;
+        });
     });
+
+
 
 
 };

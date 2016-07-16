@@ -65,7 +65,7 @@ for (var i = 0; i < initialLocations.length; i++) {
 }
 
 document.getElementById('show-listings').addEventListener('click', showListings);
-document.getElementById('hide-listings').addEventListener('click', hideListings);
+
 
 }
 
@@ -126,12 +126,7 @@ for (var i = 0; i < markers.length; i++) {
 map.fitBounds(bounds);
 }
 
-// This function will loop through the listings and hide them all.
-function hideListings() {
-for (var i = 0; i < markers.length; i++) {
-  markers[i].setMap(null);
-}
-}
+
 
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
@@ -145,4 +140,9 @@ var markerImage = new google.maps.MarkerImage(
   new google.maps.Point(10, 34),
   new google.maps.Size(21,34));
 return markerImage;
+
+
+
 }
+
+var waitForMapLoad = setTimeout(showListings, 3000);
