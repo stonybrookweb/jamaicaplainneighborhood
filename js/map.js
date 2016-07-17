@@ -244,7 +244,7 @@ function getNYTimesArticles(){
     var nytUrl = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
     nytUrl += '?' + $.param({
         'api-key': "da9fbbc94ca44e22b161868f9f7bdacc",
-        'q': initialLocations[currentNYTRequest].title + ' and boston',
+        'q': initialLocations[currentNYTRequest].title + ' and boston', // add boston to search parameter to limit to Boston area
         'begin_date': "20160101", //TODO: Update time to make it todays date less 1 year
         'end_date': "20161231"
     });

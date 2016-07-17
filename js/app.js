@@ -37,35 +37,35 @@ var initialLocations = [
         }
     },
     {
-        title: 'Jackson Square Subway Station',
+        title: 'Jackson Square MBTA Station',
         location: {
             lat: 42.323116,
             lng: -71.099783
         }
     },
     {
-        title: 'Stony Brook Subway Station',
+        title: 'Stony Brook MBTA Station',
         location: {
             lat: 42.31723,
             lng: -71.104196
         }
     },
     {
-        title: 'Green Street Subway Station',
+        title: 'Green Street MBTA Station',
         location: {
             lat: 42.310397,
             lng: -71.107548
         }
     },
     {
-        title: 'Forest Hills Subway Station',
+        title: 'Forest Hills MBTA Station',
         location: {
             lat: 42.300813,
             lng: -71.113725
         }
     },
     {
-        title: 'MSPCA Animal Care and Adoption Center',
+        title: 'Angell MSPCA Animal Care and Adoption Center',
         location: {
             lat: 42.323009,
             lng: -71.110629
