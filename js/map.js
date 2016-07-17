@@ -20,7 +20,7 @@ var styles = [{"featureType":"water","elementType":"geometry","stylers":[{"hue":
     center: {lat: 42.3138461, lng: -71.12},
     zoom: 13,
     styles: styles,
-    mapTypeControl: true
+    mapTypeControl: false
 });
 
 var largeInfowindow = new google.maps.InfoWindow();
@@ -79,9 +79,6 @@ for (var i = 0; i < initialLocations.length; i++) {
     };
 }; // End initMap
 
-// TODO: Show all listings by default
-document.getElementById('show-listings').addEventListener('click', showListings);
-
 
 };
 
@@ -134,20 +131,20 @@ if (infowindow.marker != marker) {
           var nearStreetViewLocation = data.location.latLng;
           var heading = google.maps.geometry.spherical.computeHeading(
               nearStreetViewLocation, marker.position);
-          infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>' + wikiData + nyTimesData);
+          infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1><div id="pano"></div>' + wikiData + nyTimesData + '</div>');
           var panoramaOptions = {
               position: nearStreetViewLocation,
               pov: {
                   heading: heading,
-                  pitch: 30
+                  pitch: 10
               }
           };
           var panorama = new google.maps.StreetViewPanorama(
               document.getElementById('pano'), panoramaOptions);
         }
         else {
-            infowindow.setContent('<div>' + marker.title + '</div>' +
-                '<div>No Street View Found</div>' + wikiData + nyTimesData);
+            infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1>' +
+                '<div>No Street View Found</div>' + wikiData + nyTimesData + '</div>');
         }
     };
 

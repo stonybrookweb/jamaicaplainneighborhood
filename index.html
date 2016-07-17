@@ -20,11 +20,10 @@
 </head>
 
 <body>
-<div class="options-box">
-    <input id="show-listings" type="button" value="Show All Listings">
+<div class="selection-box">
     <p>Filter: <input data-bind="textInput: query, valueUpdate: 'keyup'" type="search" /></p>
     <ul data-bind="foreach: search()">
-        <li data-bind="text: title, click: $parent.mapClick"></li>
+        <li class="location-item"data-bind="text: title, click: $parent.mapClick"></li>
     </ul>
 </div>
 <div id="map"></div>
