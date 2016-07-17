@@ -91,13 +91,27 @@ document.getElementById('show-listings').addEventListener('click', showListings)
 function populateInfoWindow(marker, infowindow) {
     // Check for Wiki Data
     var wikiData = '<div class="wiki-info"><h3>Wikepedia Articles</h3><p>No Wikipedia Informaion Available.</p></div>';
-    if(wikiArray[marker.id][2].length > 0){
+    // Check array value is ok before proceeding. Reference: http://stackoverflow.com/questions/2672380/how-do-i-check-if-a-javascript-array-value-is-empty-or-null
+    if(typeof wikiArray[marker.id] !=='undefined' &&wikiArray[marker.id][2].length > 0){
         wikiData = '<div class="wiki-info"><h3>Wikepedia Articles</h3><p>';
         wikiData +=  wikiArray[marker.id][2];
-        wikiData +=  '<a href="' + wikiArray[marker.id][3] + '" target="_blank">' + wikiArray[marker.id][3] + '</a></p>';
+        wikiData +=  ' <a href="' + wikiArray[marker.id][3] + '" target="_blank">' + wikiArray[marker.id][3] + '</a></p>';
         wikiData +=  '</div>';
     };
 
+    // Check for NY Times Data
+    var nyTimesData = '<div class="nyt-info"><h3>NY Times Articles</h3><p>No New York Times Articles Available.</p></div>';
+    // Check array value is ok before proceeding. Reference: http://stackoverflow.com/questions/2672380/how-do-i-check-if-a-javascript-array-value-is-empty-or-null
+    if(typeof nyTimesArticleArray[marker.id] !== 'undefined' && nyTimesArticleArray[marker.id].response.docs.length > 0){
+        nyTimesData = '<div class="nyt-info"><h3>New York Times Articles</h3>';
+        // Loop through available articles
+        nyTimesArticleArray[marker.id].response.docs.forEach(function(article){
+          nyTimesData += '<h4>' + article.headline.main + '</h4>';
+          nyTimesData += '<p>' + article.snippet;
+          nyTimesData += ' <a href="' + article.web_url + '" target="_blank">' + article.web_url + '</a></p>';
+        });
+        nyTimesData +=  '</div>';
+    };
 
 
 // Check to make sure the infowindow is not already opened on this marker.
@@ -117,11 +131,10 @@ if (infowindow.marker != marker) {
     // TODO: Think about separating Wiki Data from Streetview data display
     function getStreetView(data, status) {
         if (status == google.maps.StreetViewStatus.OK) {
-          console.log(wikiData);
           var nearStreetViewLocation = data.location.latLng;
           var heading = google.maps.geometry.spherical.computeHeading(
               nearStreetViewLocation, marker.position);
-          infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>' + wikiData);
+          infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>' + wikiData + nyTimesData);
           var panoramaOptions = {
               position: nearStreetViewLocation,
               pov: {
@@ -134,7 +147,7 @@ if (infowindow.marker != marker) {
         }
         else {
             infowindow.setContent('<div>' + marker.title + '</div>' +
-                '<div>No Street View Found</div>' + wikiData);
+                '<div>No Street View Found</div>' + wikiData + nyTimesData);
         }
     };
 
@@ -208,7 +221,7 @@ function getWikiArticles(){
                   getWikiArticles();
             } else {
                   // TODO: Delete this else statement just used for testing.
-                  console.log(wikiArray);
+                  // console.log(wikiArray);
             };
         }
     });
@@ -216,3 +229,43 @@ function getWikiArticles(){
 
 
 getWikiArticles();
+
+ //  *** NY Times API ***
+var nyTimesArticleArray = [];
+var currentNYTRequest = 0;
+var countOfArticles = initialLocations.length - 1;
+
+function getNYTimesArticles(){
+    // Using recursion one at a time look up titles via Wikipedia API
+    // Reminder of using recursion from http://stackoverflow.com/questions/14408718/wait-for-callback-before-continue-for-loop
+    // Setup URL for Ajax request to include the current location title
+
+    // Built by LucyBot. www.lucybot.com via https://developer.nytimes.com/article_search_v2.json#/Console/GET/articlesearch.json
+    var nytUrl = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+    nytUrl += '?' + $.param({
+        'api-key': "da9fbbc94ca44e22b161868f9f7bdacc",
+        'q': initialLocations[currentWikiRequest].title,
+        'begin_date': "20160101", //TODO: Update time to make it todays date less 1 year
+        'end_date': "20161231"
+    });
+
+    // now recursion!
+    $.ajax({
+        url: nytUrl,
+        method: 'GET',
+        dataType: 'json',
+        success: function(response){
+            nyTimesArticleArray[currentNYTRequest] = response;
+            // Now we check if we need to do more requests and use recursion to do them.
+            if (currentNYTRequest < countOfArticles){
+                  currentNYTRequest ++;
+                  getNYTimesArticles();
+            } else {
+                  // TODO: Delete this else statement just used for testing.
+                  console.log(nyTimesArticleArray);
+            };
+        }
+    });
+};
+
+getNYTimesArticles();
