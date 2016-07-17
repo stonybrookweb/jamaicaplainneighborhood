@@ -35,6 +35,55 @@ var initialLocations = [
             lat: 42.312878,
             lng: -71.114382
         }
+    },
+    {
+        title: 'Jackson Square Subway Station',
+        location: {
+            lat: 42.323116,
+            lng: -71.099783
+        }
+    },
+    {
+        title: 'Stony Brook Subway Station',
+        location: {
+            lat: 42.31723,
+            lng: -71.104196
+        }
+    },
+    {
+        title: 'Green Street Subway Station',
+        location: {
+            lat: 42.310397,
+            lng: -71.107548
+        }
+    },
+    {
+        title: 'Forest Hills Subway Station',
+        location: {
+            lat: 42.300813,
+            lng: -71.113725
+        }
+    },
+    {
+        title: 'MSPCA Animal Care and Adoption Center',
+        location: {
+            lat: 42.323009,
+            lng: -71.110629
+        }
+    },
+    {
+        title: 'Loring-Greenough House',
+        location: {
+            lat: 42.309569,
+            lng: -71.114939
+        }
+    },
+    {
+        title: 'Arnold Arboretum',
+        location: {
+            lat: 42.298426,
+            lng: -71.125541
+        }
     }
 ];
 

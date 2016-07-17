@@ -124,7 +124,7 @@ if (infowindow.marker != marker) {
         infowindow.marker = null;
     });
     var streetViewService = new google.maps.StreetViewService();
-    var radius = 50;
+    var radius = 300;
     // In case the status is OK, which means the pano was found, compute the
     // position of the streetview image, then calculate the heading, then get a
     // panorama from that and set the options
@@ -244,7 +244,7 @@ function getNYTimesArticles(){
     var nytUrl = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
     nytUrl += '?' + $.param({
         'api-key': "da9fbbc94ca44e22b161868f9f7bdacc",
-        'q': initialLocations[currentWikiRequest].title,
+        'q': initialLocations[currentNYTRequest].title + ' and boston',
         'begin_date': "20160101", //TODO: Update time to make it todays date less 1 year
         'end_date': "20161231"
     });
@@ -262,7 +262,7 @@ function getNYTimesArticles(){
                   getNYTimesArticles();
             } else {
                   // TODO: Delete this else statement just used for testing.
-                  console.log(nyTimesArticleArray);
+                  // console.log(nyTimesArticleArray);
             };
         }
     });
