@@ -91,8 +91,6 @@ var initialLocations = [
 // Wrap functionality in jQuery ready function to make sure page is loaded before doing anything.
 $(document).ready(function(){
 
-
-
 var ViewModel = function() {
     // Set self to this so we can access the this of the View Model Function while still accessing the this of a specific binding.
     var self = this;
@@ -138,7 +136,7 @@ var ViewModel = function() {
                 }
                 else {
                     markers[Location.id].setMap(null);
-                };
+                }
             }
             return Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0;
         });
@@ -147,22 +145,9 @@ var ViewModel = function() {
     // When a location in the list of locations is clicked send a click to the Google Maps API to show the info window.
     self.mapClick = function(){
         google.maps.event.trigger(markers[this.id], 'click');
-    }
-
-
-
-
-
-
-
-
+    };
 }; // End View Model
 
 ko.applyBindings(new ViewModel());
 
 });
-
-
-
-
-

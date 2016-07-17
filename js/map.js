@@ -8,79 +8,75 @@ var map;
 // Create a new blank array for all the markers.
 var markers = [];
 
-
-
 function initMap() {
-// Create a styles array to use with the map.
-// Sytle from Snazzy Maps https://snazzymaps.com/style/81/ilustra%C3%A7%C3%A3o
-var styles = [{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#71ABC3"},{"saturation":-10},{"lightness":-21},{"visibility":"simplified"}]},{"featureType":"landscape.natural","elementType":"geometry","stylers":[{"hue":"#7DC45C"},{"saturation":37},{"lightness":-41},{"visibility":"simplified"}]},{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"hue":"#C3E0B0"},{"saturation":23},{"lightness":-12},{"visibility":"simplified"}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#A19FA0"},{"saturation":-98},{"lightness":-20},{"visibility":"off"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"simplified"}]}];
+    // Create a styles array to use with the map.
+    // Sytle from Snazzy Maps https://snazzymaps.com/style/81/ilustra%C3%A7%C3%A3o
+    var styles = [{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#71ABC3"},{"saturation":-10},{"lightness":-21},{"visibility":"simplified"}]},{"featureType":"landscape.natural","elementType":"geometry","stylers":[{"hue":"#7DC45C"},{"saturation":37},{"lightness":-41},{"visibility":"simplified"}]},{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"hue":"#C3E0B0"},{"saturation":23},{"lightness":-12},{"visibility":"simplified"}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#A19FA0"},{"saturation":-98},{"lightness":-20},{"visibility":"off"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"simplified"}]}];
 
-// Constructor to create a new map of Jamaica Plain.
-    map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 42.3138461, lng: -71.12},
-    zoom: 13,
-    styles: styles,
-    mapTypeControl: false
-});
-
-var largeInfowindow = new google.maps.InfoWindow();
-
-// Style the markers a bit. This will be our listing marker icon.
-var defaultIcon = makeMarkerIcon('0091ff');
-
-// Create a "highlighted location" marker color for when the user mouses over the marker.
-var highlightedIcon = makeMarkerIcon('FFFF24');
-
-// Create a "selected location" marker color for when the user selects a marker from the list.
-var selectedIcon = makeMarkerIcon('4B0082');
-
-// The following group uses the location array to create an array of markers on initialize.
-for (var i = 0; i < initialLocations.length; i++) {
-    // Get the position from the location array.
-    var position = initialLocations[i].location;
-    var title = initialLocations[i].title;
-    // Create a marker per location, and put into markers array.
-    var marker = new google.maps.Marker({
-        position: position,
-        title: title,
-        animation: google.maps.Animation.DROP,
-        icon: defaultIcon,
-        id: i
+    // Constructor to create a new map of Jamaica Plain.
+        map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 42.3138461, lng: -71.12},
+        zoom: 13,
+        styles: styles,
+        mapTypeControl: false
     });
 
-    // Push the marker to our array of markers.
-    markers.push(marker);
+    var largeInfowindow = new google.maps.InfoWindow();
 
-    // Create an onclick event to open the large infowindow at each marker.
-    marker.addListener('click', function() {
-        populateInfoWindow(this, largeInfowindow);
-        toggleBounce(this);
-    });
+    // Style the markers a bit. This will be our listing marker icon.
+    var defaultIcon = makeMarkerIcon('0091ff');
 
-  // Two event listeners - one for mouseover, one for mouseout,
-  // to change the colors back and forth.
-    marker.addListener('mouseover', function() {
-        this.setIcon(highlightedIcon);
-    });
-    marker.addListener('mouseout', function() {
-        this.setIcon(defaultIcon);
-    });
+    // Create a "highlighted location" marker color for when the user mouses over the marker.
+    var highlightedIcon = makeMarkerIcon('FFFF24');
+
+    // Create a "selected location" marker color for when the user selects a marker from the list.
+    var selectedIcon = makeMarkerIcon('4B0082');
+
+    // The following group uses the location array to create an array of markers on initialize.
+    for (var i = 0; i < initialLocations.length; i++) {
+        // Get the position from the location array.
+        var position = initialLocations[i].location;
+        var title = initialLocations[i].title;
+        // Create a marker per location, and put into markers array.
+        var marker = new google.maps.Marker({
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            icon: defaultIcon,
+            id: i
+        });
+
+        // Push the marker to our array of markers.
+        markers.push(marker);
+
+        // Create an onclick event to open the large infowindow at each marker.
+        marker.addListener('click', function() {
+            populateInfoWindow(this, largeInfowindow);
+            toggleBounce(this);
+        });
+
+      // Two event listeners - one for mouseover, one for mouseout,
+      // to change the colors back and forth.
+        marker.addListener('mouseover', function() {
+            this.setIcon(highlightedIcon);
+        });
+        marker.addListener('mouseout', function() {
+            this.setIcon(defaultIcon);
+        });
 
 
-    function toggleBounce(currentMarker) {
-    // First go through all markers and set animation to null
-    markers.forEach(function(marker){
-        marker.setAnimation(null);
-        marker.setIcon(defaultIcon);
-    });
-    // Now animate the current marker
-    currentMarker.setAnimation(google.maps.Animation.BOUNCE);
-    currentMarker.setIcon(selectedIcon);
-    };
-}; // End initMap
-
-
-};
+        function toggleBounce(currentMarker) {
+        // First go through all markers and set animation to null
+        markers.forEach(function(marker){
+            marker.setAnimation(null);
+            marker.setIcon(defaultIcon);
+        });
+        // Now animate the current marker
+        currentMarker.setAnimation(google.maps.Animation.BOUNCE);
+        currentMarker.setIcon(selectedIcon);
+        }
+    }// End for Loop
+}// End initMap
 
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
@@ -94,7 +90,7 @@ function populateInfoWindow(marker, infowindow) {
         wikiData +=  wikiArray[marker.id][2];
         wikiData +=  ' <a href="' + wikiArray[marker.id][3] + '" target="_blank">' + wikiArray[marker.id][3] + '</a></p>';
         wikiData +=  '</div>';
-    };
+}
 
     // Check for NY Times Data
     var nyTimesData = '<div class="nyt-info"><h3>NY Times Articles</h3><p>No New York Times Articles Available.</p></div>';
@@ -108,54 +104,53 @@ function populateInfoWindow(marker, infowindow) {
           nyTimesData += ' <a href="' + article.web_url + '" target="_blank">' + article.web_url + '</a></p>';
         });
         nyTimesData +=  '</div>';
-    };
+    }
 
 
 // Check to make sure the infowindow is not already opened on this marker.
-if (infowindow.marker != marker) {
-    // Clear the infowindow content to give the streetview time to load.
-    infowindow.setContent('');
-    infowindow.marker = marker;
-    // Make sure the marker property is cleared if the infowindow is closed.
-    infowindow.addListener('closeclick', function() {
-        infowindow.marker = null;
-    });
-    var streetViewService = new google.maps.StreetViewService();
-    var radius = 300;
-    // In case the status is OK, which means the pano was found, compute the
-    // position of the streetview image, then calculate the heading, then get a
-    // panorama from that and set the options
-    // TODO: Think about separating Wiki Data from Streetview data display
-    function getStreetView(data, status) {
-        if (status == google.maps.StreetViewStatus.OK) {
-          var nearStreetViewLocation = data.location.latLng;
-          var heading = google.maps.geometry.spherical.computeHeading(
-              nearStreetViewLocation, marker.position);
-          infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1><div id="pano"></div>' + wikiData + nyTimesData + '</div>');
-          var panoramaOptions = {
-              position: nearStreetViewLocation,
-              pov: {
-                  heading: heading,
-                  pitch: 10
-              }
-          };
-          var panorama = new google.maps.StreetViewPanorama(
-              document.getElementById('pano'), panoramaOptions);
+    if (infowindow.marker != marker) {
+        // Clear the infowindow content to give the streetview time to load.
+        infowindow.setContent('');
+        infowindow.marker = marker;
+        // Make sure the marker property is cleared if the infowindow is closed.
+        infowindow.addListener('closeclick', function() {
+            infowindow.marker = null;
+        });
+        var streetViewService = new google.maps.StreetViewService();
+        var radius = 300;
+        // In case the status is OK, which means the pano was found, compute the
+        // position of the streetview image, then calculate the heading, then get a
+        // panorama from that and set the options
+        // TODO: Think about separating Wiki Data from Streetview data display
+        function getStreetView(data, status) {
+            if (status == google.maps.StreetViewStatus.OK) {
+              var nearStreetViewLocation = data.location.latLng;
+              var heading = google.maps.geometry.spherical.computeHeading(
+                  nearStreetViewLocation, marker.position);
+              infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1><div id="pano"></div>' + wikiData + nyTimesData + '</div>');
+              var panoramaOptions = {
+                  position: nearStreetViewLocation,
+                  pov: {
+                      heading: heading,
+                      pitch: 10
+                  }
+              };
+              var panorama = new google.maps.StreetViewPanorama(
+                  document.getElementById('pano'), panoramaOptions);
+            }
+            else {
+                infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1>' +
+                    '<div>No Street View Found</div>' + wikiData + nyTimesData + '</div>');
+            }
         }
-        else {
-            infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1>' +
-                '<div>No Street View Found</div>' + wikiData + nyTimesData + '</div>');
-        }
-    };
 
-
-    // Use streetview service to get the closest streetview image within
-    // 50 meters of the markers position
-    streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-    // Open the infowindow on the correct marker.
-    infowindow.open(map, marker);
-};
-};
+        // Use streetview service to get the closest streetview image within
+        // 50 meters of the markers position
+        streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+        // Open the infowindow on the correct marker.
+        infowindow.open(map, marker);
+    }
+} // End populate infowindow
 
 // TODO: Remove this functionality and show by default - move this into creation of markers
 // This function will loop through the markers array and display them all.
@@ -165,9 +160,9 @@ function showListings() {
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(map);
         bounds.extend(markers[i].position);
-    };
+    }
     map.fitBounds(bounds);
-};
+}
 
 
 // This function takes in a COLOR, and then creates a new marker
@@ -216,13 +211,10 @@ function getWikiArticles(){
             if (currentWikiRequest < countOfArticles){
                   currentWikiRequest ++;
                   getWikiArticles();
-            } else {
-                  // TODO: Delete this else statement just used for testing.
-                  // console.log(wikiArray);
-            };
+            }
         }
     });
-};
+}
 
 
 getWikiArticles();
@@ -257,12 +249,9 @@ function getNYTimesArticles(){
             if (currentNYTRequest < countOfArticles){
                   currentNYTRequest ++;
                   getNYTimesArticles();
-            } else {
-                  // TODO: Delete this else statement just used for testing.
-                  // console.log(nyTimesArticleArray);
-            };
+            }
         }
     });
-};
+}
 
 getNYTimesArticles();

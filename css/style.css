@@ -58,7 +58,7 @@ ul {
   font-size: 12px;
 }
 
-@media (max-width: 768){
+@media (max-width: 768px){
   .selection-box {
     min-width: 200px;
   }
@@ -75,4 +75,22 @@ ul {
 
 }
 
+@media (max-width: 480px){
+  .selection-box {
+      height: 50px;
+      width: 100%;
+      overflow-y: hidden;
+  }
+
+  .infowindow {
+    width: 200px;
+    height: 200px;
 }
+
+  #pano {
+    width: 165px;
+    height: 100px;
+  }
+
+}
+
