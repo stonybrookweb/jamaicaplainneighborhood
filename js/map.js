@@ -1,4 +1,4 @@
-(function(){
+(function(global){
 "use strict";
 // Javascript Code to create a map with the Google Maps API.
 // https://developers.google.com/maps/
@@ -8,9 +8,9 @@
 var map;
 
 // Create a new blank array for all the markers.
-var markers = [];
+global.markers = [];
 
-function initMap() {
+global.initMap  = function () {
     // Create a styles array to use with the map.
     // Sytle from Snazzy Maps https://snazzymaps.com/style/81/ilustra%C3%A7%C3%A3o
     var styles = [{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#71ABC3"},{"saturation":-10},{"lightness":-21},{"visibility":"simplified"}]},{"featureType":"landscape.natural","elementType":"geometry","stylers":[{"hue":"#7DC45C"},{"saturation":37},{"lightness":-41},{"visibility":"simplified"}]},{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"hue":"#C3E0B0"},{"saturation":23},{"lightness":-12},{"visibility":"simplified"}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#A19FA0"},{"saturation":-98},{"lightness":-20},{"visibility":"off"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"simplified"}]}];
@@ -260,4 +260,4 @@ function getNYTimesArticles(){
 }
 
 getNYTimesArticles();
-}());
+}(window));
