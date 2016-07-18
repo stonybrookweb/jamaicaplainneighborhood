@@ -76,6 +76,9 @@ function initMap() {
         currentMarker.setIcon(selectedIcon);
         }
     }// End for Loop
+
+    // Now that map is set up apply Knockout bindings
+    window.ko.applyBindings(new ViewModel());
 }// End initMap
 
 // This function populates the infowindow when the marker is clicked. We'll only allow

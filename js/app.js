@@ -87,11 +87,8 @@ var initialLocations = [
     }
 ];
 
-
-// Wrap functionality in jQuery ready function to make sure page is loaded before doing anything.
-$(document).ready(function(){
-
 var ViewModel = function() {
+    "use strict";
     // Set self to this so we can access the this of the View Model Function while still accessing the this of a specific binding.
     var self = this;
     // Create an empty observable array to hold the locations
@@ -99,11 +96,11 @@ var ViewModel = function() {
 
     // Constructor for a location object
     var Location = function(locationItem, id) {
-    this.title = ko.observable(locationItem.title);
-    this.location = ko.observable(locationItem.location);
-    this.note = ko.observable(locationItem.note);
-    this.id = id;
-};
+        this.title = ko.observable(locationItem.title);
+        this.location = ko.observable(locationItem.location);
+        this.note = ko.observable(locationItem.note);
+        this.id = id;
+    };
 
     // Loop over all locations and create an observable for each and add to an to the locationList array.
     // Neat trick to get an index on an element using a for each loop instead of doing a for loop reference at:
@@ -130,12 +127,13 @@ var ViewModel = function() {
     self.search = ko.computed(function(){
         return ko.utils.arrayFilter(self.locationList(), function(Location){
             // Check to see if Markers exist so we can also filter markers.
+            // TODO: Try using set visible status instead
             if(markers.length > 0){
                 if(Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
-                    markers[Location.id].setMap(map);
+                    markers[Location.id].visible = true;
                 }
                 else {
-                    markers[Location.id].setMap(null);
+                    markers[Location.id].visible = false;
                 }
             }
             return Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0;
@@ -147,7 +145,3 @@ var ViewModel = function() {
         google.maps.event.trigger(markers[this.id], 'click');
     };
 }; // End View Model
-
-ko.applyBindings(new ViewModel());
-
-});
