@@ -1,3 +1,5 @@
+(function(){
+"use strict";
 // Javascript Code to create a map with the Google Maps API.
 // https://developers.google.com/maps/
 // Much of this code is from from the Udacity Google Maps API course https://www.udacity.com/course/google-maps-apis--ud864
@@ -258,3 +260,4 @@ function getNYTimesArticles(){
 }
 
 getNYTimesArticles();
+}());
