@@ -107,12 +107,17 @@ main,
 
   .infowindow {
     width: 200px;
-    height: 200px;
+    height: 400px;
+    z-index: 30;
 }
 
+  .infowindow-header {
+    font-size: 14px;
+  }
+
   #pano {
-    width: 165px;
-    height: 100px;
+    width: 200px;
+    height: 250px;
   }
 
   .openList{
