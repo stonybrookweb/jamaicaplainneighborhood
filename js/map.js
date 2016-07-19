@@ -17,6 +17,10 @@ var mapLatLng = {lat: 42.3138461, lng: -71.12};
 global.markers = [];
 
 global.initMap  = function () {
+    if(typeof google === 'undefined'){
+        console.log('Google Maps failed to load. Please try again later.');
+        return;
+}
     // Create a styles array to use with the map.
     // Sytle from Snazzy Maps https://snazzymaps.com/style/81/ilustra%C3%A7%C3%A3o
     var styles = [{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#71ABC3"},{"saturation":-10},{"lightness":-21},{"visibility":"simplified"}]},{"featureType":"landscape.natural","elementType":"geometry","stylers":[{"hue":"#7DC45C"},{"saturation":37},{"lightness":-41},{"visibility":"simplified"}]},{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"hue":"#C3E0B0"},{"saturation":23},{"lightness":-12},{"visibility":"simplified"}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#A19FA0"},{"saturation":-98},{"lightness":-20},{"visibility":"off"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"simplified"}]}];
@@ -204,16 +208,20 @@ function getWikiArticles(){
     var wikiURL = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + wikiSearch + '&format=json&callback=wikiCallback';
 
     $.ajax({
-        url: wikiURL,
-        dataType: 'jsonp',
-        success: function(response){
+            // ajax settings
+            url: wikiURL,
+            dataType: 'jsonp',
+        }).done(function (response) {
+            // successful
             wikiArray[currentWikiRequest] = response;
             // Now we check if we need to do more requests and use recursion to do them.
             if (currentWikiRequest < countOfArticles){
                 currentWikiRequest ++;
                 getWikiArticles();
             }
-        }
+        }).fail(function (jqXHR, textStatus) {
+            // error handling
+            alert('Wikipedia data not currently available. Please try again later.');
     });
 }
 
@@ -240,17 +248,21 @@ function getNYTimesArticles(){
 
     // now recursion!
     $.ajax({
-        url: nytUrl,
-        method: 'GET',
-        dataType: 'json',
-        success: function(response){
+            // ajax settings
+            url: nytUrl,
+            method: 'GET',
+            dataType: 'json',
+        }).done(function (response) {
+            // successful
             nyTimesArticleArray[currentNYTRequest] = response;
             // Now we check if we need to do more requests and use recursion to do them.
             if (currentNYTRequest < countOfNYTArticles){
                 currentNYTRequest ++;
                 getNYTimesArticles();
             }
-        }
+        }).fail(function (jqXHR, textStatus) {
+            // error handling
+            alert('New York Times data not currently available. Please try again later.');
     });
 }
 
@@ -263,6 +275,10 @@ window.onresize = function() {
         bounds.extend(marker.getPosition());
     });
     map.fitBounds(bounds);
+};
+
+global.googleError = function() {
+    alert('Google Maps Failed to load. Please try again later.');
 };
 
 }(window));
