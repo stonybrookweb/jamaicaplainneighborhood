@@ -8,7 +8,8 @@
 var map,
     defaultIcon,
     highlightedIcon,
-    selectedIcon;
+    selectedIcon,
+    streetViewService;
 
 var mapLatLng = {lat: 42.3138461, lng: -71.12};
 
@@ -132,17 +133,29 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.addListener('closeclick', function() {
             infowindow.marker = null;
         });
-        var streetViewService = new google.maps.StreetViewService();
-        var radius = 300;
+        streetViewService = new google.maps.StreetViewService();
+
+
+        infoWindowDetails(marker, infowindow, wikiData, nyTimesData);
+        // Open the infowindow on the correct marker.
+        infowindow.open(map, marker);
+    }
+} // End populate infowindow
+
+function infoWindowDetails(marker, infowindow, wikiData, nyTimesData){
         // In case the status is OK, which means the pano was found, compute the
         // position of the streetview image, then calculate the heading, then get a
         // panorama from that and set the options
-        // TODO: Think about separating Wiki Data from Streetview data display
+        // Use streetview service to get the closest streetview image within
+        // 50 meters of the markers position
+        // TODO: Think about refactoring this so it simplified. It was inside the loop and worked ok but had to move outside loop to pass "use strict"re
+        var radius = 300;
+        streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
         function getStreetView(data, status) {
             if (status == google.maps.StreetViewStatus.OK) {
                 var nearStreetViewLocation = data.location.latLng;
                 var heading = google.maps.geometry.spherical.computeHeading(
-                  nearStreetViewLocation, marker.position);
+                    nearStreetViewLocation, marker.position);
 
                 infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1><div id="pano"></div>' + wikiData + nyTimesData + '</div>');
 
@@ -153,21 +166,13 @@ function populateInfoWindow(marker, infowindow) {
                         pitch: 10
                     }
                 };
-
                 var panorama = new google.maps.StreetViewPanorama(
-                  document.getElementById('pano'), panoramaOptions);
+                    document.getElementById('pano'), panoramaOptions);
             } else {
                 infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1>' + '<div>No Street View Found</div>' + wikiData + nyTimesData + '</div>');
             }
         }
-
-        // Use streetview service to get the closest streetview image within
-        // 50 meters of the markers position
-        streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-        // Open the infowindow on the correct marker.
-        infowindow.open(map, marker);
-    }
-} // End populate infowindow
+}
 
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
