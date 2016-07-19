@@ -5,7 +5,10 @@
 // Much of this code is from from the Udacity Google Maps API course https://www.udacity.com/course/google-maps-apis--ud864
 
 // Create the map variable that will store the map.
-var map;
+var map,
+    defaultIcon,
+    highlightedIcon,
+    selectedIcon;
 
 var mapLatLng = {lat: 42.3138461, lng: -71.12};
 
@@ -29,13 +32,13 @@ global.initMap  = function () {
     var largeInfowindow = new google.maps.InfoWindow();
 
     // Style the markers a bit. This will be our listing marker icon.
-    var defaultIcon = makeMarkerIcon('0091ff');
+    defaultIcon = makeMarkerIcon('0091ff');
 
     // Create a "highlighted location" marker color for when the user mouses over the marker.
-    var highlightedIcon = makeMarkerIcon('FFFF24');
+    highlightedIcon = makeMarkerIcon('FFFF24');
 
     // Create a "selected location" marker color for when the user selects a marker from the list.
-    var selectedIcon = makeMarkerIcon('4B0082');
+    selectedIcon = makeMarkerIcon('4B0082');
 
     // The following group uses the location array to create an array of markers on initialize.
     for (var i = 0; i < initialLocations.length; i++) {
