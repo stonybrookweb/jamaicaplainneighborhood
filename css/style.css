@@ -86,7 +86,7 @@ main,
 
   #menu-toggle {
     display: none;
-
+  }
 }
 
 @media (max-width: 480px){
@@ -133,6 +133,6 @@ main,
     border: 1px solid lightgrey;
     background-color: black;
     color: white;
-    margin: 0 10px 0 0 ;
+    margin: 0 10px 0 0;
   }
 }
