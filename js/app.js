@@ -106,7 +106,7 @@ var ViewModel = function() {
     // Neat trick to get an index on an element using a for each loop instead of doing a for loop reference at:
     // http://stackoverflow.com/questions/10179815/how-do-you-get-the-loop-counter-index-using-a-for-in-syntax-in-javascript
     // Need index so we can us that when we send a click or actions to the google maps api.
-    initialLocations.forEach(function(locationItem, id){
+    initialLocations.forEach(function(locationItem, id) {
         self.locationList.push( new Location(locationItem, id));
     });
 
@@ -124,11 +124,11 @@ var ViewModel = function() {
     // Each search is completed using the indexOf Javascript function that returns -1 if the string is not found.
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf
     // TODO: Update data model and search to filter on categories.
-    self.search = ko.computed(function(){
+    self.search = ko.computed(function() {
         return ko.utils.arrayFilter(self.locationList(), function(Location){
             // Check to see if Markers exist so we can also filter markers.
             // TODO: Try using set visible status instead
-            if(markers.length > 0){
+            if(markers.length > 0) {
                 if(Location.title().toLowerCase().indexOf(self.query().toLowerCase()) >= 0){
                     markers[Location.id].visible = true;
                 }
@@ -141,7 +141,27 @@ var ViewModel = function() {
     });
 
     // When a location in the list of locations is clicked send a click to the Google Maps API to show the info window.
-    self.mapClick = function(){
+    self.mapClick = function() {
         google.maps.event.trigger(markers[this.id], 'click');
+        // Close the menu if it is open
+        if(self.menuClass() == true){
+            self.menuClass(false);
+            self.menuName('Menu');
+        };
     };
+
+    // Create a toggle switch to open and close the menu
+    self.menuName = ko.observable('Menu');
+    self.menuClass = ko.observable(false);
+    self.toggleMenu = function() {
+        console.log(self.menuClass());
+        if(self.menuClass() == false){
+            self.menuClass(true);
+            self.menuName('Close Menu');
+        } else {
+            self.menuClass(false);
+            self.menuName('Menu');
+        }
+    }
+
 }; // End View Model
