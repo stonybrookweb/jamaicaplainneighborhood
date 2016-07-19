@@ -7,6 +7,8 @@
 // Create the map variable that will store the map.
 var map;
 
+var mapLatLng = {lat: 42.3138461, lng: -71.12};
+
 // Create a new blank array for all the markers.
 global.markers = [];
 
@@ -16,13 +18,14 @@ global.initMap  = function () {
     var styles = [{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#71ABC3"},{"saturation":-10},{"lightness":-21},{"visibility":"simplified"}]},{"featureType":"landscape.natural","elementType":"geometry","stylers":[{"hue":"#7DC45C"},{"saturation":37},{"lightness":-41},{"visibility":"simplified"}]},{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"hue":"#C3E0B0"},{"saturation":23},{"lightness":-12},{"visibility":"simplified"}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#A19FA0"},{"saturation":-98},{"lightness":-20},{"visibility":"off"}]},{"featureType":"road","elementType":"geometry","stylers":[{"hue":"#FFFFFF"},{"saturation":-100},{"lightness":100},{"visibility":"simplified"}]}];
 
     // Constructor to create a new map of Jamaica Plain.
-        map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 42.3138461, lng: -71.12},
-        zoom: 13,
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: mapLatLng,
+        zoom: 14,
         styles: styles,
         mapTypeControl: false
     });
 
+    // Create new infoWindow
     var largeInfowindow = new google.maps.InfoWindow();
 
     // Style the markers a bit. This will be our listing marker icon.
@@ -43,6 +46,7 @@ global.initMap  = function () {
         var marker = new google.maps.Marker({
             position: position,
             title: title,
+            map: map,
             animation: google.maps.Animation.DROP,
             icon: defaultIcon,
             id: i
@@ -55,6 +59,8 @@ global.initMap  = function () {
         marker.addListener('click', function() {
             populateInfoWindow(this, largeInfowindow);
             toggleBounce(this);
+            // Center current marker on map thanks to tip from Udacity reviewer.
+            map.panTo(this.getPosition());
         });
 
       // Two event listeners - one for mouseover, one for mouseout,
@@ -66,22 +72,22 @@ global.initMap  = function () {
             this.setIcon(defaultIcon);
         });
 
-
         function toggleBounce(currentMarker) {
-        // First go through all markers and set animation to null
-        markers.forEach(function(marker){
+            // First go through all markers and set animation to null
+            markers.forEach(function(marker){
             marker.setAnimation(null);
             marker.setIcon(defaultIcon);
-        });
-        // Now animate the current marker
-        currentMarker.setAnimation(google.maps.Animation.BOUNCE);
-        currentMarker.setIcon(selectedIcon);
-        }
+            });
+            // Now animate the current marker
+            currentMarker.setAnimation(google.maps.Animation.BOUNCE);
+            currentMarker.setIcon(selectedIcon);
+            }
+
     }// End for Loop
 
     // Now that map is set up apply Knockout bindings
     window.ko.applyBindings(new ViewModel());
-}// End initMap
+};// End initMap
 
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
@@ -95,7 +101,7 @@ function populateInfoWindow(marker, infowindow) {
         wikiData +=  wikiArray[marker.id][2];
         wikiData +=  ' <a href="' + wikiArray[marker.id][3] + '" target="_blank">' + wikiArray[marker.id][3] + '</a></p>';
         wikiData +=  '</div>';
-}
+    }
 
     // Check for NY Times Data
     var nyTimesData = '<div class="nyt-info"><h3>NY Times Articles</h3><p>No New York Times Articles Available.</p></div>';
@@ -104,13 +110,12 @@ function populateInfoWindow(marker, infowindow) {
         nyTimesData = '<div class="nyt-info"><h3>New York Times Articles</h3>';
         // Loop through available articles
         nyTimesArticleArray[marker.id].response.docs.forEach(function(article){
-          nyTimesData += '<h4>' + article.headline.main + '</h4>';
-          nyTimesData += '<p>' + article.snippet;
-          nyTimesData += ' <a href="' + article.web_url + '" target="_blank">' + article.web_url + '</a></p>';
+            nyTimesData += '<h4>' + article.headline.main + '</h4>';
+            nyTimesData += '<p>' + article.snippet;
+            nyTimesData += ' <a href="' + article.web_url + '" target="_blank">' + article.web_url + '</a></p>';
         });
         nyTimesData +=  '</div>';
     }
-
 
 // Check to make sure the infowindow is not already opened on this marker.
     if (infowindow.marker != marker) {
@@ -129,23 +134,24 @@ function populateInfoWindow(marker, infowindow) {
         // TODO: Think about separating Wiki Data from Streetview data display
         function getStreetView(data, status) {
             if (status == google.maps.StreetViewStatus.OK) {
-              var nearStreetViewLocation = data.location.latLng;
-              var heading = google.maps.geometry.spherical.computeHeading(
+                var nearStreetViewLocation = data.location.latLng;
+                var heading = google.maps.geometry.spherical.computeHeading(
                   nearStreetViewLocation, marker.position);
-              infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1><div id="pano"></div>' + wikiData + nyTimesData + '</div>');
-              var panoramaOptions = {
-                  position: nearStreetViewLocation,
-                  pov: {
-                      heading: heading,
-                      pitch: 10
-                  }
-              };
-              var panorama = new google.maps.StreetViewPanorama(
+
+                infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1><div id="pano"></div>' + wikiData + nyTimesData + '</div>');
+
+                var panoramaOptions = {
+                    position: nearStreetViewLocation,
+                    pov: {
+                        heading: heading,
+                        pitch: 10
+                    }
+                };
+
+                var panorama = new google.maps.StreetViewPanorama(
                   document.getElementById('pano'), panoramaOptions);
-            }
-            else {
-                infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1>' +
-                    '<div>No Street View Found</div>' + wikiData + nyTimesData + '</div>');
+            } else {
+                infowindow.setContent('<div class="infowindow"><h1 class="infowindow-header">' + marker.title + '</h1>' + '<div>No Street View Found</div>' + wikiData + nyTimesData + '</div>');
             }
         }
 
@@ -156,19 +162,6 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.open(map, marker);
     }
 } // End populate infowindow
-
-// TODO: Remove this functionality and show by default - move this into creation of markers
-// This function will loop through the markers array and display them all.
-function showListings() {
-    var bounds = new google.maps.LatLngBounds();
-    // Extend the boundaries of the map for each marker and display the marker
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
-        bounds.extend(markers[i].position);
-    }
-    map.fitBounds(bounds);
-}
-
 
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
@@ -185,21 +178,13 @@ function makeMarkerIcon(markerColor) {
     return markerImage;
 }
 
-
-
-
-// All listings should show by default. But if we call to early the Google Maps API won't be finished it's work.
-var waitForMapLoad = setTimeout(showListings, 300);
-
-
-
-
  //  *** Wikipedia API ***
     // https://www.mediawiki.org/wiki/API:Main_page
     // set up new array to use for wiki articles
-var wikiArray = [];
-var currentWikiRequest = 0;
-var countOfArticles = initialLocations.length - 1;
+var wikiArray = [],
+    currentWikiRequest = 0,
+    countOfArticles = initialLocations.length - 1;
+
 function getWikiArticles(){
     // Using recursion one at a time look up titles via Wikipedia API
     // Reminder of using recursion from http://stackoverflow.com/questions/14408718/wait-for-callback-before-continue-for-loop
@@ -214,20 +199,19 @@ function getWikiArticles(){
             wikiArray[currentWikiRequest] = response;
             // Now we check if we need to do more requests and use recursion to do them.
             if (currentWikiRequest < countOfArticles){
-                  currentWikiRequest ++;
-                  getWikiArticles();
+                currentWikiRequest ++;
+                getWikiArticles();
             }
         }
     });
 }
 
-
 getWikiArticles();
 
  //  *** NY Times API ***
-var nyTimesArticleArray = [];
-var currentNYTRequest = 0;
-var countOfArticles = initialLocations.length - 1;
+var nyTimesArticleArray = [],
+    currentNYTRequest = 0,
+    countOfNYTArticles = initialLocations.length - 1;
 
 function getNYTimesArticles(){
     // Using recursion one at a time look up titles via Wikipedia API
@@ -251,13 +235,23 @@ function getNYTimesArticles(){
         success: function(response){
             nyTimesArticleArray[currentNYTRequest] = response;
             // Now we check if we need to do more requests and use recursion to do them.
-            if (currentNYTRequest < countOfArticles){
-                  currentNYTRequest ++;
-                  getNYTimesArticles();
+            if (currentNYTRequest < countOfNYTArticles){
+                currentNYTRequest ++;
+                getNYTimesArticles();
             }
         }
     });
 }
 
 getNYTimesArticles();
+
+// Make map responsive and fit all markers on resize hanks to tip from Udacity reviewer.
+window.onresize = function() {
+    var bounds = new google.maps.LatLngBounds(null);
+    markers.forEach(function(marker){
+        bounds.extend(marker.getPosition());
+    });
+    map.fitBounds(bounds);
+};
+
 }(window));
