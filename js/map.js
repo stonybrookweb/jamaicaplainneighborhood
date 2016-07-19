@@ -72,22 +72,25 @@ global.initMap  = function () {
             this.setIcon(defaultIcon);
         });
 
-        function toggleBounce(currentMarker) {
-            // First go through all markers and set animation to null
-            markers.forEach(function(marker){
-            marker.setAnimation(null);
-            marker.setIcon(defaultIcon);
-            });
-            // Now animate the current marker
-            currentMarker.setAnimation(google.maps.Animation.BOUNCE);
-            currentMarker.setIcon(selectedIcon);
-            }
+
 
     }// End for Loop
 
     // Now that map is set up apply Knockout bindings
     window.ko.applyBindings(new ViewModel());
 };// End initMap
+
+// Make marker bounce if it is selected
+function toggleBounce(currentMarker) {
+    // First go through all markers and set animation to null
+    markers.forEach(function(marker){
+    marker.setAnimation(null);
+    marker.setIcon(defaultIcon);
+    });
+    // Now animate the current marker
+    currentMarker.setAnimation(google.maps.Animation.BOUNCE);
+    currentMarker.setIcon(selectedIcon);
+}
 
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based

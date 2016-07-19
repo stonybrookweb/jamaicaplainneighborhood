@@ -144,10 +144,10 @@ var ViewModel = function() {
     self.mapClick = function() {
         google.maps.event.trigger(markers[this.id], 'click');
         // Close the menu if it is open
-        if(self.menuClass() == true){
+        if(self.menuClass() === true){
             self.menuClass(false);
             self.menuName('Menu');
-        };
+        }
     };
 
     // Create a toggle switch to open and close the menu
@@ -155,13 +155,13 @@ var ViewModel = function() {
     self.menuClass = ko.observable(false);
     self.toggleMenu = function() {
         console.log(self.menuClass());
-        if(self.menuClass() == false){
+        if(self.menuClass() === false){
             self.menuClass(true);
             self.menuName('Close Menu');
         } else {
             self.menuClass(false);
             self.menuName('Menu');
         }
-    }
+    };
 
 }; // End View Model
